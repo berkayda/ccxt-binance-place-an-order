@@ -38,23 +38,36 @@ def get_current_price(symbol=symbol):
         print("Attempt > Max. Attempts (Please try later.)")
         return None
 
-def set_leverage(symbol = symbol, leverage = leverage): #set leverage to ISOLATED mode
-    global leverage_response
-    exchange.load_markets()
-    market = exchange.market(symbol)
-    leverage_response = exchange.fapiPrivatePostLeverage({
-        'symbol': market['id'],
-        'leverage': leverage,
-    })
-    print(leverage_response)
-    try:
-        response = exchange.fapiprivate_post_margintype({
-            'symbol': market['id'],
-            'marginType': 'ISOLATED',
-        })
-        print(response)
-    except ccxt.MarginModeAlreadySet:
-        print('Margin mode is already set to ISOLATED. No need to change.')
+def set_leverage(symbol=symbol, leverage=leverage):
+    max_attempts = 10
+    attempt = 1
+    while attempt <= max_attempts:
+        try:
+            global leverage_response
+            exchange.load_markets()
+            market = exchange.market(symbol)
+            leverage_response = exchange.fapiPrivatePostLeverage({
+                'symbol': market['id'],
+                'leverage': leverage,
+            })
+            print(leverage_response)
+            try:
+                response = exchange.fapiprivate_post_margintype({
+                    'symbol': market['id'],
+                    'marginType': 'ISOLATED',
+                })
+                print(response)
+            except ccxt.MarginModeAlreadySet:
+                print('Margin mode is already set to ISOLATED. No need to change.')
+            return
+        except Exception as e:
+            print(f"Error: {e}")
+            if attempt < max_attempts:
+                print("Trying to set leverage...")
+                time.sleep(5)
+        attempt += 1
+    if attempt > max_attempts:
+        print("Attempt > Max. Attempts (Please try later.)")
 
 #set_leverage(symbol, leverage) #example function usage
 
