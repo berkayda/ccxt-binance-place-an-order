@@ -19,14 +19,23 @@ symbol = "BTCUSDT"
 leverage = 30
 futures_usdt_amount = 5 #This is the USDT value of your position
 
-def get_current_price(symbol = symbol): #Get current price of coin
-    try:
-        ticker = exchange.fetch_ticker(symbol)
-        price = ticker['last']
-        print("Price: " + str(price) + " USDT")
-        return price
-    except Exception as e:
-        print(f"Error: {e}")
+def get_current_price(symbol=symbol):
+    max_attempts = 10 
+    attempt = 1
+    while attempt <= max_attempts:
+        try:
+            ticker = exchange.fetch_ticker(symbol)
+            price = ticker['last']
+            print("Price: " + str(price) + " USDT")
+            return price
+        except Exception as e:
+            print(f"Error: {e}")
+            if attempt < max_attempts:
+                print("Trying to get the current price...")
+                time.sleep(10)
+        attempt += 1
+    if attempt > max_attempts:
+        print("Attempt > Max. Attempts (Please try later.)")
         return None
 
 def set_leverage(symbol = symbol, leverage = leverage): #set leverage to ISOLATED mode
