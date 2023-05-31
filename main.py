@@ -1,16 +1,9 @@
 import ccxt
 import config
 import pandas as pd
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', 1000)
-import warnings
-warnings.filterwarnings('ignore')
-import numpy as np
 from datetime import datetime
 import time
 import requests
-import schedule
 
 
 exchange = ccxt.binance({
